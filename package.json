@@ -1,0 +1,52 @@
+{
+    "name": "mock-api",
+    "type": "module",
+    "version": "1.0.0",
+    "description": "Generate a mock REST API server from TypeScript interfaces",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "bin": {
+        "mock-api": "dist/cli.js"
+    },
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "postbuild": "chmod +x dist/cli.js",
+        "prepare": "npm run build",
+        "start": "node dist/cli.js",
+        "dev": "tsx src/cli.ts",
+        "typecheck": "tsc --noEmit"
+    },
+    "keywords": [
+        "mock",
+        "api",
+        "faker",
+        "typescript",
+        "rest",
+        "testing"
+    ],
+    "author": "",
+    "license": "ISC",
+    "packageManager": "pnpm@10.26.1",
+    "devDependencies": {
+        "@types/express": "^5.0.6",
+        "@types/node": "^25.5.0",
+        "ts-node": "^10.9.2",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3"
+    },
+    "dependencies": {
+        "@faker-js/faker": "^10.3.0",
+        "commander": "^14.0.3",
+        "express": "^5.2.1",
+        "ts-morph": "^27.0.2"
+    }
+}
