@@ -1,5 +1,5 @@
 {
-    "name": "mock-api",
+    "name": "create-mock-api-from-types",
     "type": "module",
     "version": "1.0.0",
     "description": "Generate a mock REST API server from TypeScript interfaces",
