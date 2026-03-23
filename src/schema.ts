@@ -6,3 +6,9 @@ interface User {
     password: string;
     isActive: boolean;
 }
+
+type Product = {
+    id: string;
+    name: string;
+    price: number;
+};

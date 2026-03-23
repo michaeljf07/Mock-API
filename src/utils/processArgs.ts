@@ -8,7 +8,9 @@ export function processArgs(argv: string[]): MockApiOptions {
 
     program
         .name("mock-api")
-        .description("Generate a mock REST API from TypeScript interfaces")
+        .description(
+        "Generate a mock REST API from TypeScript interfaces and object type aliases"
+    )
         .argument("<schemas...>", "TypeScript schema file path(s)")
         .option("-p, --port <number>", "Port to run the server on", "3000")
         .option(
