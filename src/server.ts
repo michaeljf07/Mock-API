@@ -1,10 +1,13 @@
 import { resolve } from "node:path";
 import express, { type Express } from "express";
-import { Project } from "ts-morph";
+import { Node, Project } from "ts-morph";
 import type { MockApiOptions } from "./types.js";
 import { DataStore } from "./store/dataStore.js";
 import { buildRouter } from "./router/routeBuilder.js";
-import { generateMockCollection } from "./utils/mockGenerator.js";
+import {
+    generateMockCollection,
+    type ObjectSchema,
+} from "./utils/mockGenerator.js";
 import { toRoutePath, toCollectionKey } from "./utils/nameUtils.js";
 
 // createServer(options) creates a new server with the given options
@@ -22,33 +25,46 @@ export function createServer(options: MockApiOptions): Express {
         project.addSourceFilesAtPaths(resolve(schemaPath));
     }
 
-    const interfaces = project
-        .getSourceFiles()
-        .flatMap((sf) => sf.getInterfaces());
+    const schemas: Array<{ name: string; schema: ObjectSchema }> = [];
 
-    // If no interfaces are found, warn the user
-    if (interfaces.length === 0) {
+    for (const sf of project.getSourceFiles()) {
+        // Add all interfaces to the schemas
+        for (const iface of sf.getInterfaces()) {
+            schemas.push({ name: iface.getName(), schema: iface });
+        }
+        // Add all type aliases to the schemas
+        for (const typeAlias of sf.getTypeAliases()) {
+            const typeNode = typeAlias.getTypeNode();
+            if (typeNode !== undefined && Node.isTypeLiteral(typeNode)) {
+                schemas.push({ name: typeAlias.getName(), schema: typeNode });
+            }
+        }
+    }
+
+    if (schemas.length === 0) {
         console.warn(
-            "Warning: No interfaces found in the provided schema files"
+            "Warning: No interfaces or object type aliases found in the provided schema files"
         );
     }
 
     const routes: Array<{ path: string; interface: string; count: number }> =
         [];
 
-    // For each interface, generate mock data, build the router, and add the route to the server
-    for (const iface of interfaces) {
-        const name = iface.getName();
+    for (const { name, schema } of schemas) {
         const routePath = toRoutePath(name);
         const collectionKey = toCollectionKey(name);
 
-        const mockData = generateMockCollection(iface, project, options.count);
+        const mockData = generateMockCollection(schema, project, options.count);
         store.seed(collectionKey, mockData);
 
         const router = buildRouter(collectionKey, store);
         app.use(routePath, router);
 
-        routes.push({ path: routePath, interface: name, count: options.count });
+        routes.push({
+            path: routePath,
+            interface: name,
+            count: options.count,
+        });
     }
 
     // Root route lists all available collections
