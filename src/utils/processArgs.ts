@@ -9,8 +9,8 @@ export function processArgs(argv: string[]): MockApiOptions {
     program
         .name("mock-api")
         .description(
-        "Generate a mock REST API from TypeScript interfaces and object type aliases"
-    )
+            "Generate a mock REST API from TypeScript interfaces and object type aliases"
+        )
         .argument("<schemas...>", "TypeScript schema file path(s)")
         .option("-p, --port <number>", "Port to run the server on", "3000")
         .option(
@@ -20,9 +20,7 @@ export function processArgs(argv: string[]): MockApiOptions {
         )
         .parse(argv);
 
-    // Get the schema paths and options from the program
     const schemaPaths = program.args;
-    // Get the port and count options from the program
     const opts = program.opts<{ port: string; count: string }>();
 
     const port = parseInt(opts.port, 10);
